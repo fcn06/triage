@@ -36,9 +36,9 @@
 
 ## 2. Key Responsibilities & Architectural Guardrails
 
-1. **Dual-Plane Grounding (Watching the Watcher):**
-   - **Plane A (TCB Grounding):** Deterministic schema inspection (`schema_inspector.rs`) calculates state mutation, HTTP verbs, IAM scope impacts, and strict financial bounds independently of the LLM.
-   - **Plane B (Advisory Context):** Swarm Gateway contextualizes semantics and intent, explicitly badged as untrusted advisory context outside the TCB.
+1. **Dual-Plane Grounding (Watching the Watcher for Trust Gateway):**
+   - **Plane A (Trust Gateway TCB Grounding):** Deterministic schema inspection (`schema_inspector.rs`) calculates state mutation, HTTP verbs, IAM scope impacts, and strict financial bounds independently of the LLM, guaranteeing the **Trust Gateway** PEP relies only on verifiable facts.
+   - **Plane B (Advisory Context for Trust Gateway & Reviewer):** Semantic intent and contextual analysis delivered to the **Trust Gateway** approval queue (derived via cognitive reasoning), explicitly badged as untrusted advisory context strictly outside the **Trust Gateway** Trusted Computing Base (TCB).
 2. **Never-Bypass Invariant:**
    - Candidate rules synthesized for novel actions **never grant direct bypass (`action = "allow"`)**.
    - All approved novel patterns emit structured escalation rules (`action = "require_approval"`) with parameter projection masks (`projected_fields`).
