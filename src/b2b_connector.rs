@@ -1,6 +1,5 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use tracing::debug;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct B2bContextQuery {
@@ -19,6 +18,7 @@ pub struct B2bContextResponse {
 #[derive(Clone)]
 pub struct CommercialB2bConnector {
     pub b2b_agent_url: String,
+    #[allow(dead_code)]
     pub agent_did: String,
     pub client: reqwest::Client,
 }

@@ -34,17 +34,18 @@
 
 ---
 
-## 2. Key Responsibilities
+## 2. Key Responsibilities & Architectural Guardrails
 
-1. **Novel Action Triage:** When Trust Gateway encounters an action matching 0 deterministic rules, `triage_agent` performs:
-   - Blast radius analysis (financial exposure, mutation status, data classification).
-   - Identity verification cross-referenced with `commercial_b2b_agent`.
-   - Cognitive intent extraction via Swarm Gateway.
-2. **Recommendation Generation:**
-   - `recommend_approve`: Safe novel pattern within bounded limits.
-   - `require_human_approval`: Sensitive or state-modifying action requiring HITL step-up.
-   - `recommend_reject`: Hazardous, destructive, or injection-like action.
-3. **Candidate Rule Synthesis:** Automatically formulates a minimal-privilege TOML rule (`[[rules]]`) ready for human sign-off and dynamic promotion into `policy.toml`.
+1. **Dual-Plane Grounding (Watching the Watcher):**
+   - **Plane A (TCB Grounding):** Deterministic schema inspection (`schema_inspector.rs`) calculates state mutation, HTTP verbs, IAM scope impacts, and strict financial bounds independently of the LLM.
+   - **Plane B (Advisory Context):** Swarm Gateway contextualizes semantics and intent, explicitly badged as untrusted advisory context outside the TCB.
+2. **Never-Bypass Invariant:**
+   - Candidate rules synthesized for novel actions **never grant direct bypass (`action = "allow"`)**.
+   - All approved novel patterns emit structured escalation rules (`action = "require_approval"`) with parameter projection masks (`projected_fields`).
+3. **Probationary "Babysitting" Lifecycle:**
+   - Adopted rules enter a state machine (`Draft` -> `Probationary` -> `Graduated` / `Quarantined`).
+   - Requires $K$ confirmations (default 5) across $\ge 2$ independent approvers before qualifying for parameter-bounded graduation.
+   - A single human rejection trips an immediate quarantine tripwire.
 
 ---
 
@@ -52,9 +53,11 @@
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/healthz` | Health status and upstream connectivity (Swarm & B2B Agent) |
-| `POST` | `/v1/triage/evaluate` | Evaluates novel `ProposedAction` and outputs `TriageResponse` |
-| `POST` | `/v1/triage/validate_rule` | Dry-run linter for candidate TOML policy rules |
+| `GET` | `/healthz` | Health status, dependency connectivity, and active guardrails |
+| `POST` | `/v1/triage/evaluate` | Evaluates novel `ProposedAction` and outputs Dual-Plane `TriageResponse` |
+| `POST` | `/v1/triage/validate_rule` | Dry-run linter enforcing never-bypass and safety constraints |
+| `POST` | `/v1/triage/probation/record_confirmation` | Records human confirmation/rejection, tracking quorum & graduation |
+| `POST` | `/v1/triage/probation/check_status` | Queries probation progress, unique approvers, and lifecycle status |
 
 ---
 

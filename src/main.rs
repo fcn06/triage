@@ -7,12 +7,15 @@ mod b2b_connector;
 mod cognitive;
 mod evaluator;
 mod models;
+mod probation_store;
 mod rule_synthesizer;
+mod schema_inspector;
 mod server;
 
 use b2b_connector::CommercialB2bConnector;
 use cognitive::SwarmClient;
 use evaluator::TriageEvaluator;
+use probation_store::ProbationStore;
 use rule_synthesizer::RuleSynthesizer;
 
 #[derive(Parser, Debug)]
@@ -62,6 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let swarm_client = SwarmClient::new(swarm_url, swarm_model, swarm_token);
     let b2b_connector = CommercialB2bConnector::new(b2b_agent_url, b2b_did);
     let rule_synthesizer = RuleSynthesizer::default();
+    let probation_store = Arc::new(ProbationStore::new());
 
     let evaluator = Arc::new(TriageEvaluator::new(
         swarm_client,
@@ -69,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         rule_synthesizer,
     ));
 
-    let app = server::create_router(evaluator);
+    let app = server::create_router(evaluator, probation_store);
     let addr = format!("{}:{}", host, port);
     let listener = tokio::net::TcpListener::bind(&addr).await?;
 
