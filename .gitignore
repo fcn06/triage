@@ -1,0 +1,61 @@
+# ═══════════════════════════════════════════════════════════
+#  Rust & Cargo Build Artifacts
+# ═══════════════════════════════════════════════════════════
+/target/
+**/*.rs.bk
+*.pdb
+
+# ═══════════════════════════════════════════════════════════
+#  Environment Configurations & Secrets
+# ═══════════════════════════════════════════════════════════
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+
+# ═══════════════════════════════════════════════════════════
+#  Logs, Diagnostics & Profiling
+# ═══════════════════════════════════════════════════════════
+*.log
+logs/
+*.profraw
+core
+core.*
+
+# ═══════════════════════════════════════════════════════════
+#  IDE, Editor & Tooling State
+# ═══════════════════════════════════════════════════════════
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (IntelliJ, CLion, RustRover)
+.idea/
+*.iml
+
+# Vim / Emacs / Sublime
+*~
+*.swp
+*.swo
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ═══════════════════════════════════════════════════════════
+#  Operating System Metadata
+# ═══════════════════════════════════════════════════════════
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini

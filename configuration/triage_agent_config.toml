@@ -1,0 +1,29 @@
+# ==============================================================================
+# Triage Agent Configuration
+# ==============================================================================
+
+[server]
+host = "127.0.0.1"
+port = 4015
+workers = 4
+
+[swarm_gateway]
+url = "http://127.0.0.1:8080"
+format = "responses"
+model_id = "openai/gpt-oss-20b"
+timeout_secs = 10
+
+[commercial_b2b_agent]
+url = "http://127.0.0.1:4010"
+did = "did:web:agents.enterprise.internal:commercial-b2b"
+timeout_secs = 5
+
+[trust_gateway]
+url = "http://127.0.0.1:8081"
+policy_version = "1.0.0"
+
+[triage_rules]
+min_priority_synthetic = 11
+max_priority_synthetic = 19
+disallow_wildcard_tools = true
+require_min_auth_level = 3
