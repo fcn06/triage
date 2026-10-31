@@ -65,7 +65,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let swarm_client = SwarmClient::new(swarm_url, swarm_model, swarm_token);
     let b2b_connector = CommercialB2bConnector::new(b2b_agent_url, b2b_did);
     let rule_synthesizer = RuleSynthesizer::default();
-    let probation_store = Arc::new(ProbationStore::new());
+    let db_path = std::env::var("PROBATION_DB_PATH").unwrap_or_else(|_| "data/probation.db".to_string());
+    let probation_store = Arc::new(ProbationStore::open(&db_path).unwrap_or_else(|e| {
+        tracing::warn!("Failed to open persistent SQLite probation store at {db_path}: {e}, using in-memory fallback");
+        ProbationStore::new()
+    }));
 
     let evaluator = Arc::new(TriageEvaluator::new(
         swarm_client,

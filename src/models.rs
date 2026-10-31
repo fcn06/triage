@@ -213,3 +213,74 @@ pub struct ProbationStatusResponse {
     pub unique_callers: Vec<String>,
     pub history: Vec<ProbationConfirmationRecord>,
 }
+
+// ==============================================================================
+// Drift Deduplication & Amendment Models (M5)
+// ==============================================================================
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct DriftRecord {
+    pub drift_id: String,
+    pub diff_fingerprint: String,
+    pub tool_name: String,
+    pub first_seen_epoch_secs: u64,
+    pub last_seen_epoch_secs: u64,
+    pub occurrence_count: u32,
+    pub details: serde_json::Value,
+    pub candidate_amendment: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecordDriftRequest {
+    pub tool_name: String,
+    pub diff_fingerprint: String,
+    pub details: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RecordDriftResponse {
+    pub drift_id: String,
+    pub diff_fingerprint: String,
+    pub occurrence_count: u32,
+    pub deduplicated: bool,
+    pub candidate_amendment: Option<String>,
+}
+
+// ==============================================================================
+// Policy Promotion Two-Human Quorum Models (ADR-0005, M5)
+// ==============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PromotionSignature {
+    pub signer_did: String,
+    pub signature_hex: String,
+    pub timestamp_epoch_secs: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct PolicyPromotion {
+    pub promotion_id: String,
+    pub rule_name: String,
+    pub candidate_action: String,
+    pub required_signatures: u32,
+    pub signatures: Vec<PromotionSignature>,
+    pub status: String,
+    pub canonical_hash: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubmitPromotionSignatureRequest {
+    pub promotion_id: String,
+    pub signer_did: String,
+    pub signature_hex: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubmitPromotionSignatureResponse {
+    pub promotion_id: String,
+    pub status: String,
+    pub signatures_count: usize,
+    pub required_signatures: u32,
+    pub message: String,
+}
